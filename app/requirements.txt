@@ -1,0 +1,10 @@
+django
+django-cors-headers
+django-minio-storage
+djangorestframework
+drf-yasg
+gunicorn
+psycopg2
+pyopenssl
+python-dotenv
+redis
