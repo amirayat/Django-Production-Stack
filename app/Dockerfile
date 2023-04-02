@@ -1,7 +1,6 @@
 FROM python:3.11-slim-bullseye AS compile-image
 
-# RUN apt-get update && apt-get install -y python3-dev python3-pip libpq-dev libev-dev
-RUN apt-get update && apt-get install -y libpq-dev libev-dev
+RUN apt-get update && apt-get install -y libpq-dev libev-dev gcc
 
 RUN pip install --user --upgrade pip
 RUN pip install --user --upgrade setuptools wheel
@@ -10,6 +9,7 @@ RUN pip install --user -r requirements.txt
 
 FROM python:3.11-slim-bullseye AS build-image
 
+RUN apt-get update && apt-get install -y libpq5
 RUN useradd --create-home appuser
 
 COPY --from=compile-image /root/.local /home/appuser/.local
