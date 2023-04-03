@@ -4,7 +4,8 @@ services:
 
   web:
     build: "./app"
-    container_name: ${DJANGO_CONTAINER_NAME}
+    image: django_app
+    container_name: django_app
     restart: "always"
     expose:
       - "8000"
@@ -12,10 +13,9 @@ services:
       - ./volumes/app:/home/appuser/app
       - ./volumes/log:/home/appuser/log
     networks:
-      - web_network
-      - nginx_network
-      - redis_network
+      - postgres_network
       - minio_network
+      - redis_network
     env_file:
       - "./.env"
     depends_on:
@@ -27,7 +27,8 @@ services:
 
   postgres:
     image: postgres:alpine
-    container_name: ${POSTGRES_CONTAINER_NAME}
+    container_name: django_postgres
+    hostname: postgres
     command: -p ${DB_PORT}
     expose:
       - ${DB_PORT}
@@ -35,24 +36,22 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME}
       PGDATA: /var/lib/postgresql/data/pgdata
     networks:
       - postgres_network
     volumes:
-      - ./volumes/db:/var/lib/postgresql/data 
+      - ./volumes/db/data:/var/lib/postgresql/data 
     security_opt:
       - no-new-privileges:true
 
   minio: 
     image: quay.io/minio/minio
-    container_name: ${MINIO_CONTAINER_NAME}
+    container_name: django_minio
+    hostname: minio
     command: server --console-address ":9001" /data
     expose:
       - "9000"
-      - "9001"
     ports:
-      - 9000:9000
       - 9001:9001
     networks:
       - minio_network
@@ -69,7 +68,8 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: ${REDIS_CONTAINER_NAME}
+    container_name: django_redis
+    hostname: redis
     command: redis-server --requirepass ${REDIS_PASS} --port ${REDIS_PORT}
     expose:
       - ${REDIS_PORT}
@@ -82,32 +82,22 @@ services:
       - no-new-privileges:true
 
   nginx:
-    build: "./nginx"
-    container_name: ${NGINX_CONTAINER_NAME}
+    image: owasp/modsecurity-crs:nginx-alpine
+    container_name: django_nginx
     restart: "always"
     ports:
       - ${NGINX_PORT}:80
     networks:
-      - nginx_network
+      - minio_network
     depends_on:
       - "web"
     volumes:
       - ./volumes/log:/var/log/nginx
+      - ./volumes/nginx/default.conf:/etc/nginx/templates/conf.d/default.conf.template
     security_opt:
       - no-new-privileges:true
 
-volumes:
-  redis:
-    driver: local
-
 networks:
-  web_network:
-    # external: True
   postgres_network:
-    # external: True
   minio_network:
-    # external: True
   redis_network:
-    # external: True
-  nginx_network:
-    # external: True
