@@ -24,6 +24,7 @@ USER appuser
 WORKDIR /home/appuser/app
 
 CMD while ! python3 manage.py sqlflush > /dev/null 2>&1 ; do sleep 1 ; done && \
+    python3 manage.py createdatabase_if_not_exist && \
     python3 manage.py migrate --noinput && \
     python3 manage.py collectstatic --noinput && \
     python3 manage.py createsuperuser_if_not_exist \
@@ -33,7 +34,5 @@ CMD while ! python3 manage.py sqlflush > /dev/null 2>&1 ; do sleep 1 ; done && \
     gunicorn --worker-tmp-dir /dev/shm \
     --workers=${GUNICORN_WORKERS} \
     --bind 0.0.0.0:8000 \
-    --access-logfile /home/appuser/log/gunicorn-access.log \
-    --error-logfile /home/appuser/log/gunicorn-error.log \
-    --loglevel warning \
+    --log-level warning --log-file /home/appuser/log/gunicorn-error.log \
     core.wsgi:application
