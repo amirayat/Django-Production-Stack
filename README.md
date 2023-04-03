@@ -15,6 +15,17 @@ docker-compose down
 
 ### Notes
 
-<blockquote>I’d probably choose the official Docker Python image (python:3.11-slim-bullseye).</blockquote>
+- About python docker base image:
 
-See this [link](https://pythonspeed.com/articles/base-image-python-docker-images/).
+    <blockquote>I’d probably choose the official Docker Python image (python:3.11-slim-bullseye).</blockquote>
+    
+    See this [link](https://pythonspeed.com/articles/base-image-python-docker-images/).
+
+- To deploy Distributed MinIO on Docker Compose:
+    https://github.com/minio/minio/tree/master/docs/orchestration/docker-compose
+
+- To change Nginx-Modsecurity configuration:
+    Replace ```/volumes/nginx/default.conf```
+
+- Leave ```REDIS_USER``` blank if you use redis default user.
+
