@@ -1,6 +1,8 @@
 django
 django-cors-headers
 django-minio-storage
+django-prometheus  
+django-redis
 djangorestframework
 drf-yasg
 gunicorn
