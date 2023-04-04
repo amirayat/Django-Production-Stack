@@ -1,11 +1,16 @@
 route:
-    receiver: 'slack'
-
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: 'web.hook'
 receivers:
-    - name: 'slack'
-      slack_configs:
-          - send_resolved: true
-            text: "{{ .CommonAnnotations.description }}"
-            username: 'Prometheus'
-            channel: '#prometheus'
-            api_url: 'https://hooks.slack.com/services/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'
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://localhost:5001/'
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']
