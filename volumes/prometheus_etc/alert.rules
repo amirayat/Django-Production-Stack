@@ -103,7 +103,7 @@
     expr: max(django_migrations_applied_total) BY (job, connection)
   - record: job:django_migrations_unapplied_total:max
     expr: max(django_migrations_unapplied_total) BY (job, connection)
-- "name": "django"
+- "name": django
   "rules":
   - "alert": "DjangoMigrationsUnapplied"
     "annotations":
@@ -190,3 +190,22 @@
       * 100 > 5
     "labels":
       "severity": "warning"
+- name: minio-alerts
+  rules:
+  - alert: NodesOffline
+    expr: avg_over_time(minio_cluster_nodes_offline_total{job="minio"}[5m]) > 0
+    for: 10m
+    labels:
+      severity: warn
+    annotations:
+      summary: "Node down in MinIO deployment"
+      description: "Node(s) in cluster {{ $labels.instance }} offline for more than 5 minutes"
+
+  - alert: DisksOffline
+    expr: avg_over_time(minio_cluster_disk_offline_total{job="minio"}[5m]) > 0
+    for: 10m
+    labels:
+      severity: warn
+    annotations:
+      summary: "Disks down in MinIO deployment"
+      description: "Disks(s) in cluster {{ $labels.instance }} offline for more than 5 minutes"
