@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf import settings
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from django.conf.urls.static import static
 from rest_framework.permissions import AllowAny
 from drf_yasg.views import get_schema_view
@@ -38,6 +38,11 @@ schema_view = get_schema_view(
 # project routes
 urlpatterns = [
     path('admin/', admin.site.urls),
+]
+
+# prometheus routes
+urlpatterns += [
+    path('', include('django_prometheus.urls')),
 ]
 
 # static and media routes
