@@ -78,7 +78,7 @@ services:
       - ${REDIS_PORT}
     restart: always
     volumes: 
-      - ./volumes/redis/data:/data
+      - redis_data:/data
     networks:
       - redis_network
     security_opt:
@@ -168,6 +168,7 @@ services:
 volumes:
     prometheus_data: 
     grafana_data: 
+    redis_data:
 
 networks:
   postgres_network:
