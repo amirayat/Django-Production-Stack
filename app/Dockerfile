@@ -2,10 +2,11 @@ FROM python:3.11-slim-bullseye AS compile-image
 
 RUN apt-get update && apt-get install -y libpq-dev libev-dev gcc
 
-RUN pip install --user --upgrade pip
-RUN pip install --user --upgrade setuptools wheel
+# RUN pip install --user --default-timeout=5000 --upgrade pip
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pip -U
+RUN pip install --user --default-timeout=5000 --upgrade setuptools wheel
 COPY ./requirements.txt .
-RUN pip install --user -r requirements.txt
+RUN pip install --user --default-timeout=5000 -r requirements.txt
 
 FROM python:3.11-slim-bullseye AS build-image
 

@@ -54,6 +54,7 @@ services:
     container_name: django_minio
     hostname: minio
     command: server --console-address ":9001" /data
+    restart: always
     expose:
       - "9000"
     ports:
@@ -98,6 +99,7 @@ services:
       - minio_network
     depends_on:
       - "web"
+      - "fluentd"
     volumes:
       - ./volumes/log:/var/log/nginx
       - ./volumes/nginx/default.conf:/etc/nginx/templates/conf.d/default.conf.template
@@ -177,6 +179,45 @@ services:
     labels:
       org.label-schema.group: "monitoring"
 
+  fluentd:
+    build: "./fluentd"
+    container_name: django_fluentd
+    hostname: fluend
+    restart: always
+    expose:
+      - "24224"
+    depends_on:  
+      - "elasticsearch"
+    volumes:
+      - ./fluentd/fluent.conf:/fluentd/etc/fluent.conf    
+    networks:
+      - logging_network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+    container_name: django_elasticsearch
+    hostname: elasticsearch
+    environment:
+      - "discovery.type=single-node"
+    expose:
+      - "9200"
+    volumes:
+      - ./volumes/elasticsearch/data:/usr/share/elasticsearch/data
+    networks:
+      - logging_network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.7.0
+    container_name: django_kibana
+    hostname: kibana
+    ports:
+      - "5601:5601"
+    depends_on:  
+      - "elasticsearch"
+    networks:
+      - logging_network
+
+
 volumes:
     prometheus_data: 
     grafana_data: 
@@ -187,3 +228,4 @@ networks:
   minio_network:
   redis_network:
   monitoring_network:
+  logging_network:
