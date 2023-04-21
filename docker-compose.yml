@@ -56,6 +56,7 @@ services:
     command: server --console-address ":9001" /data
     expose:
       - "9000"
+    restart: always
     ports:
       - 9001:9001
     networks:
