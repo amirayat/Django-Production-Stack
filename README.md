@@ -29,3 +29,5 @@ docker-compose down
 
 - Leave ```REDIS_USER``` blank if you use redis default user.
 
+Follow this [link](https://medium.com/@amirayat20/recommended-stack-for-your-django-project-91f9a3016007) for more information.
+
